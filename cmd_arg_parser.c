@@ -57,25 +57,20 @@ int ParseCommandLineArguments(int argc, char** argv) {
 		char* arg_string = argv[i];
 
 		if(arg_string[0] != '-') {
+			// arg doesn't start with '-'
+
 			InvalidArgumentString(arg_string, i - 1);
 			return 0;
 		}
-		else if(arg_string[1] == '-') {
-			if(arg_string[2] == '\0') {
-				printf("Empty arg at pos %d...\n", i - 1);
-				return 0;
-			}
+		else if(arg_string[1] == '\0') {
+			// arg has nothing after '-'
 
-			// String args
-			if(!ArgStrExists(arg_string + 2)) {
-				InvalidArgumentString(arg_string + 2, i - 1);
-				return 0;
-			}
-			
-			printf("Good arg %s at pos %d...\n", arg_string + 2, i - 1);
+			printf("Empty arg at pos %d...\n", i - 1);
+			return 0;
 		}
-		else {
-			// Char args
+		else if(arg_string[1] != '-') {
+			// single character arguments
+
 			int j = 1;
 			while(arg_string[j]) {
 				if(!ArgCharExists(arg_string[j])) {
@@ -85,16 +80,22 @@ int ParseCommandLineArguments(int argc, char** argv) {
 				++j;
 			}
 
-			if(j == 1) {
-				printf("Empty arg at pos %d...\n", i - 1);
+			printf("Good args '%s' at pos %d...\n", arg_string + 1, i - 1);
+		}
+		else if(arg_string[2] == '\0') {
+			// empty string arg
+
+			printf("Empty arg at pos %d...\n", i - 1);
+			return 0;
+		}
+		else {
+			// String args
+			if(!ArgStrExists(arg_string + 2)) {
+				InvalidArgumentString(arg_string + 2, i - 1);
 				return 0;
 			}
-			else if(j == 2) {
-				printf("Good arg '%s' at pos %d...\n", arg_string + 1, i - 1);
-			}
-			else {
-				printf("Good args '%s' at pos %d...\n", arg_string + 1, i - 1);
-			}
+			
+			printf("Good arg %s at pos %d...\n", arg_string + 2, i - 1);
 		}
 	}
 
