@@ -20,6 +20,10 @@ void ValidArgFunc(ArgState* args) {
 	args->argi++;
 }
 
+void ErrorFunc(ArgState* args) {
+	args->argi = -1;
+}
+
 UnitTestResult TEST_ParseCommandLineArguments_ValidArg() {
     ArgHandler arg_handlers[1] = {0};
 
@@ -185,8 +189,36 @@ UnitTestResult TEST_ParseCommandLineArguments_MultipleValidArgs() {
 	return test_result;
 }
 
+UnitTestResult TEST_ParseCommandLineArguments_HandlerError() {
+    ArgHandler arg_handlers[1] = {0};
+
+    snprintf(arg_handlers[0].flag, sizeof(arg_handlers[0].flag), "-c");
+    arg_handlers[0].FlagFunc = ErrorFunc;
+
+	ArgState args;
+	args.argc = 2;
+	char* argv[2] = {
+		"file_name",
+		"-c"
+	};
+	args.argv = argv;
+	args.argi = 1;
+
+	ArgState parse_result = ParseCommandLineArguments(args, arg_handlers, 1);
+	UnitTestResult test_result;
+	if(parse_result.argi != -1) {
+		test_result.passed = 0;
+		snprintf(test_result.error_str, sizeof(test_result.error_str), "Handler threw error, but parsing succeeded...\n");
+	}
+	else {
+		test_result.passed = 1;
+	}
+
+	return test_result;
+}
+
 int main() {
-	#define NUM_TESTS 6
+	#define NUM_TESTS 7
 	UnitTest all_tests[NUM_TESTS];
 
 	UnitTest test_0;
@@ -218,6 +250,11 @@ int main() {
 	test_5.test_name = "TEST_ParseCommandLineArguments_MultipleValidArgs()";
 	test_5.test_func =  TEST_ParseCommandLineArguments_MultipleValidArgs;
 	all_tests[5] = test_5;
+
+	UnitTest test_6;
+	test_6.test_name = "TEST_ParseCommandLineArguments_HandlerError()";
+	test_6.test_func =  TEST_ParseCommandLineArguments_HandlerError;
+	all_tests[6] = test_6;
 
 	for(int i = 0; i < NUM_TESTS; ++i) {
 		TEST_PRINT("Running test %s...", all_tests[i].test_name);

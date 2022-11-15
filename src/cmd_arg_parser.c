@@ -8,6 +8,7 @@
 typedef struct {
 	int    argc;
 	char** argv;
+	// argi is -1 when there is an error
 	int    argi;
 	char error_str[128];
 } ArgState;
