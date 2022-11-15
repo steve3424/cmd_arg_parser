@@ -18,6 +18,12 @@ typedef struct {
 } ArgHandler;
 
 ArgState ParseCommandLineArguments(ArgState args, ArgHandler* arg_handlers, int num_handlers) {
+	if(!arg_handlers || num_handlers == 0) {
+		snprintf(args.error_str, sizeof(args.error_str), "No arg handlers found!");
+		args.argi = -1;	
+		return args;
+	}
+
 	while(args.argi < args.argc) {
 		int arg_handler_found = 0;
 		for(int i = 0; i < num_handlers; ++i) {

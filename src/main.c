@@ -25,6 +25,11 @@ void DashDFunc(ArgState* args) {
     args->argi++;
 }
 
+void HelpFunc(ArgState* args) {
+    printf("I can't help right now...\n");
+    args->argi++;
+}
+
 // INIT FUNCTION
 void InitArgHandlers(ArgHandler* arg_handlers) {
     memcpy(arg_handlers[0].flag, "-c", 3);
@@ -32,15 +37,19 @@ void InitArgHandlers(ArgHandler* arg_handlers) {
 
     memcpy(arg_handlers[1].flag, "-d", 3);
     arg_handlers[1].FlagFunc = DashDFunc;
+
+    memcpy(arg_handlers[2].flag, "--help", 7);
+    arg_handlers[2].FlagFunc = HelpFunc;
 }
 
 int main(int argc, char** argv) {
-    ArgHandler arg_handlers[2] = {0};
+    ArgHandler arg_handlers[3] = {0};
     InitArgHandlers(arg_handlers);
-    ArgState args;
-    args.argc = argc;
-    args.argv = argv;
-    args.argi = 1;
+    ArgState args = {
+        .argc = argc,
+        .argv = argv,
+        .argi = 1
+    };
     ArgState args_parsed = ParseCommandLineArguments(args, arg_handlers, sizeof(arg_handlers) / sizeof(ArgHandler));
     if(args_parsed.argi == -1) {
         printf(args_parsed.error_str);
